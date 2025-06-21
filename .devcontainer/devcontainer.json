@@ -1,0 +1,47 @@
+{
+    "name": "python-zen",
+
+    "build": {
+        "dockerfile": "./Dockerfile",
+        "args": {
+            "NAME": "python-zen",
+            "PYTHON_VERSION": "3.10.16",
+            "UBUNTU_VERSION": "jammy"
+        }
+    },
+    "remoteUser": "zen",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "bierner.github-markdown-preview",
+                "tamasfe.even-better-toml",
+                "charliermarsh.ruff",
+                "eamodio.gitlens",
+                "lextudio.restructuredtext",
+                "streetsidesoftware.code-spell-checker",
+                "ms-python.python",
+                "ms-python.vscode-pylance"
+            ]
+        }
+    },
+    "mounts": [
+		{
+            "source": "/tmp/.X11-unix",
+            "target": "/tmp/.X11-unix",
+            "type": "bind"
+        }
+	],
+    "runArgs": [
+        "--runtime=nvidia",
+        "--gpus",
+        "all",
+        "--network",
+        "host",
+        "--device",
+        "/dev/snd",
+        "--group-add=audio"
+    ]
+//    "postCreateCommand": "poetry install",
+//    "workspaceMount": "source=${localWorkspaceFolder}/../..,target=/workspaces,type=bind",
+//    "workspaceFolder": "/workspaces"
+}
