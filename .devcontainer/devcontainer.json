@@ -29,7 +29,14 @@
             "source": "/tmp/.X11-unix",
             "target": "/tmp/.X11-unix",
             "type": "bind"
+        },
+        {
+            "source": "${localEnv:HOME}/.ssh",
+            "target": "/home/zen/.ssh",
+            "type": "bind",
+            // "consistency": "cached"
         }
+        
 	],
     "runArgs": [
         "--runtime=nvidia",
@@ -41,7 +48,4 @@
         "/dev/snd",
         "--group-add=audio"
     ]
-//    "postCreateCommand": "poetry install",
-//    "workspaceMount": "source=${localWorkspaceFolder}/../..,target=/workspaces,type=bind",
-//    "workspaceFolder": "/workspaces"
 }
