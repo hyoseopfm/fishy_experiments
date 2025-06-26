@@ -10,6 +10,9 @@ import random
 import requests
 import opensimplex
 import numpy as np
+import subprocess
+from PIL import ImageTk, Image
+import os
 #from rabbit import Rabbit
 
 root = Tk()
@@ -18,7 +21,108 @@ root.title("ђץ๏'ร ς๏๓קยՇєг")
 
 root.geometry("700x700")
 root.config(bg="black")
+money = 0
 
+def rob_the_bank():
+    global money
+    background_color = "#A34C4C"
+    dice_window = Toplevel()
+    dice_window.geometry("940x720")
+    dice_window.configure(bg=background_color)
+    dice_window.title("Rob za bank")
+
+    result_label = Label(dice_window, bg=background_color)
+    result_label.pack()
+
+    rolling_label = Label(dice_window, font=("Helvetica", 14), bg=background_color, fg="white")
+    rolling_label.pack(pady=10)
+
+    status_label = Label(dice_window, font=("Helvetica", 16), bg=background_color, fg="white")
+    status_label.pack(pady=10)
+
+    # Load dice images and keep reference on dice_window to avoid garbage collection
+    dice_window.dice_images = []
+    image_paths = [
+        "in_progress/dice_one.png", "in_progress/dice_two.png", "in_progress/dice_three.png",
+        "in_progress/dice_four.png", "in_progress/dice_five.png", "in_progress/dice_six.png"
+    ]
+    for path in image_paths:
+        img = Image.open(path)
+        photo = ImageTk.PhotoImage(img)
+        dice_window.dice_images.append(photo)
+
+    def roll_the_dice():
+        global money
+        roll_duration = 4000
+        interval = 100
+        dots_interval = 500
+        start_time = time.time()
+
+        def animate_dice():
+            global money
+            elapsed = (time.time() - start_time) * 1000
+            if elapsed < roll_duration:
+                face = random.choice(dice_window.dice_images)
+                result_label.config(image=face)
+                result_label.image = face
+                dice_window.after(interval, animate_dice)
+            else:
+                final_num = random.randint(1, 6)
+                final_face = dice_window.dice_images[final_num - 1]
+                result_label.config(image=final_face)
+                result_label.image = final_face
+                rolling_label.config(text="")
+                if final_num >= 4:
+                    money += 500
+                    status_label.config(
+                        text=f"💰 You rolled {final_num}! You stole $500 and escaped! Expect police at your door..."
+                    )
+                else:
+                    money -= 500
+                    status_label.config(
+                        text=f"💥 You rolled {final_num}! You lost $500 and got caught!"
+                    )
+
+        def animate_text():
+            elapsed = (time.time() - start_time) * 1000
+            if elapsed < roll_duration:
+                dots = int((elapsed // dots_interval) % 4)
+                rolling_label.config(text="Rolling" + "." * dots)
+                dice_window.after(dots_interval, animate_text)
+
+        animate_dice()
+        animate_text()
+
+    def setup_robbery_ui():
+        explanation = Label(
+            dice_window,
+            text="Get a four, five, or six to successfully rob za bank!!!!",
+            bg=background_color,
+            fg="white",
+            font=("Helvetica", 12)
+        )
+        explanation.pack()
+
+        rob_roll = Button(
+            dice_window,
+            text="Roll the dice",
+            bg="white",
+            activebackground="Blue",
+            command=roll_the_dice
+        )
+        rob_roll.pack(pady=5)
+
+    rob_the_bank_button = Button(
+        dice_window,
+        text="Rob the bank",
+        bg="white",
+        activebackground="Red",
+        font=("Arial", 14),
+        command=setup_robbery_ui
+    )
+    rob_the_bank_button.pack(pady=20)
+
+    dice_window.mainloop()
 def open_top_ten_window_yay():
     url = "https://top-spotify-songs-in-73-countries.p.rapidapi.com/list"
 
@@ -54,6 +158,7 @@ def open_bank_window():
             if initial_balance < 0:
                 raise ValueError("Initial balance cannot be negative.")
             self.balance = initial_balance
+            #money += self.balance
 
         def deposit(self, amount):
             if amount <= 0:
@@ -141,6 +246,18 @@ def open_bank_window():
             )
             self.button_check_balance.pack(pady=5)
 
+            self.button_rob_the_bank = Button(
+                banka,
+                text="Rob za bank",
+                command=rob_the_bank,
+                state=DISABLED,
+                font=("Arial", 12),
+                activebackground="orange", activeforeground="white",
+                relief=RAISED, bd=3,
+                width=20, height=2
+            )
+            self.button_rob_the_bank.pack(pady=5)
+
             self.label_status = Label(
                 banka,
                 text="",
@@ -175,6 +292,7 @@ def open_bank_window():
                 self.button_withdraw.config(state=NORMAL)
                 self.button_check_balance.config(state=NORMAL)
                 self.button_create_account.config(state=DISABLED)
+                self.button_rob_the_bank.config(state=NORMAL)
             except ValueError as e:
                 messagebox.showerror("Error", str(e))
                 self.label_status.config(text=f"Error creating account: {e}", fg="red")
@@ -1255,6 +1373,261 @@ def open_aurora_window():
     if __name__ == '__main__':
         #asyncio.run(main())
         main()
+def open_flight_sim_window():
+    import tkinter as tk
+    import subprocess
+    import os
+
+    def launch_telnet():
+        try:
+            subprocess.Popen(["fgfs", "--telnet=5400", "EHAM"])
+            #os.system("fgfs --aircraft=A300 --airport=KLAX")
+            print("FlightGear launched with telnet on port 5400!")
+        except Exception as e:
+            print(f"Launch failed: {e}")
+
+    root = tk.Tk()
+    root.title("Simple FlightGear Launcher")
+    root.geometry("300x150")
+
+    button = tk.Button(root, text="Flight sim", font=("Arial", 14), command=launch_telnet)
+    button.pack(expand=True)
+
+    root.mainloop()
+def open_rpc_window():
+    pygame.init()
+    screen = pygame.display.set_mode((800, 600))
+    pygame.display.set_caption("Rock, Paper, Scissors")
+
+    rock = pygame.transform.scale(pygame.image.load('in_progress/rock.png'), (100, 200))
+    paper = pygame.transform.scale(pygame.image.load('in_progress/paper.png'), (100, 200))
+    scissors = pygame.transform.scale(pygame.image.load('in_progress/scissors.png'), (100, 200))
+
+    rock_o = pygame.transform.scale(pygame.image.load('in_progress/rock.png'), (100, 200))
+    paper_o = pygame.transform.scale(pygame.image.load('in_progress/paper.png'), (100, 200))
+    scissors_o = pygame.transform.scale(pygame.image.load('in_progress/scissors.png'), (100, 200))
+
+
+    font = pygame.font.SysFont(None, 32)
+    clock = pygame.time.Clock()
+
+    choices = ['rock', 'paper', 'scissors']
+    player_choice = None
+    opponent_choice = None
+    result = ""
+    show_result = False
+
+    def draw_text(text, center_x, y):
+        label = font.render(text, True, (255, 255, 255))
+        rect = label.get_rect(center=(center_x, y))
+        screen.blit(label, rect)
+
+    def get_result(player, opponent):
+        if player == opponent:
+            return "Draw!"
+        elif (player == "rock" and opponent == "scissors") or \
+             (player == "paper" and opponent == "rock") or \
+             (player == "scissors" and opponent == "paper"):
+            return "You Win!"
+        else:
+            return "You Lose!"
+
+    def play_again():
+        nonlocal player_choice, opponent_choice, result, show_result
+        player_choice = None
+        opponent_choice = None
+        result = ""
+        show_result = False
+
+    running = True
+    while running:
+        screen.fill((20, 20, 30))
+        mx, my = pygame.mouse.get_pos()
+
+        rock_button = pygame.Rect(100, 500, 150, 50)
+        paper_button = pygame.Rect(325, 500, 150, 50)
+        scissors_button = pygame.Rect(550, 500, 150, 50)
+        play_again_button = pygame.Rect(325, 550, 150, 40)
+
+ 
+        draw_text("Rock", rock_button.centerx, rock_button.top - 25)
+        draw_text("Paper", paper_button.centerx, paper_button.top - 25)
+        draw_text("Scissors", scissors_button.centerx, scissors_button.top - 25)
+
+
+        pygame.draw.rect(screen, (70, 70, 200), rock_button)
+        pygame.draw.rect(screen, (70, 70, 200), paper_button)
+        pygame.draw.rect(screen, (70, 70, 200), scissors_button)
+
+        if show_result:
+            pygame.draw.rect(screen, (0, 150, 100), play_again_button)
+            draw_text("Play Again", play_again_button.centerx, play_again_button.centery)
+
+ 
+        if player_choice:
+            player_img = {'rock': rock, 'paper': paper, 'scissors': scissors}[player_choice]
+            screen.blit(player_img, (100, 150))
+            draw_text("You", 175, 130)
+        if opponent_choice:
+            opp_img = {'rock': rock_o, 'paper': paper_o, 'scissors': scissors_o}[opponent_choice]
+            screen.blit(opp_img, (550, 150))
+            draw_text("Opponent", 625, 130)
+
+        if result:
+            draw_text(result, 400, 100)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                if show_result:
+                    if play_again_button.collidepoint(mx, my):
+                        play_again()
+                elif not show_result:
+                    if rock_button.collidepoint(mx, my):
+                        player_choice = "rock"
+                    elif paper_button.collidepoint(mx, my):
+                        player_choice = "paper"
+                    elif scissors_button.collidepoint(mx, my):
+                        player_choice = "scissors"
+
+                    if player_choice:
+                        opponent_choice = random.choice(choices)
+                        result = get_result(player_choice, opponent_choice)
+                        show_result = True
+
+        pygame.display.flip()
+        clock.tick(60)
+
+    pygame.quit()
+class ClickerGame:
+    def __init__(self, master):
+        self.master = master
+        self.window = Toplevel(self.master)
+        self.window.title("Clickerrrrrrr")
+        self.window.geometry("400x500")
+
+        pygame.mixer.init()
+        self.click_sound = pygame.mixer.Sound("in_progress/click.wav")
+        self.upgrade_sound = pygame.mixer.Sound("in_progress/upgrade.wav")
+
+        self.score = 0
+        self.points_per_click = 1
+        self.upgrade_levels = [0] * 5
+        self.upgrade_costs = [10, 50, 200, 1000, 3000]
+        self.upgrade_values = [1, 5, 10, 20, 70]
+        self.high_score_file = "highscore.txt"
+        self.high_score = self.load_high_score()
+
+        # Load images and preserve references
+        self.background_images = [
+            ImageTk.PhotoImage(Image.open(path).resize((400, 500), Image.LANCZOS))
+            for path in [
+                "in_progress/space_bg.png",
+                "in_progress/mountain_bg.png",
+                "in_progress/rage_man.png"
+            ]
+        ]
+        self.click_img = ImageTk.PhotoImage(Image.open("in_progress/crhome_dino.png").resize((100, 100), Image.LANCZOS))
+        self.current_bg_index = 0
+
+        self.setup_ui()
+        self.window.after(100, self.cycle_background)
+
+    def load_high_score(self):
+        if os.path.exists(self.high_score_file):
+            try:
+                with open(self.high_score_file, "r") as f:
+                    return int(f.read())
+            except:
+                return 0
+        return 0
+
+    def setup_ui(self):
+        self.bg_label = Label(self.window)
+        self.bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+
+        self.score_label = Label(self.window, text=f"Score: {self.score}", font=("Arial", 18), bg="#ffffff")
+        self.score_label.place(relx=0.5, y=20, anchor="n")
+
+        self.high_score_label = Label(self.window, text=f"High Score: {self.high_score}", font=("Arial", 14), bg="#ffffff")
+        self.high_score_label.place(relx=0.5, y=60, anchor="n")
+
+        self.click_button = Button(
+            self.window,
+            image=self.click_img,
+            command=self.click,
+            bd=0, highlightthickness=0,
+            bg="#ffffff", activebackground="#ffffff"
+        )
+        self.click_button.image = self.click_img
+        self.click_button.place(relx=0.5, rely=0.3, anchor="center")
+
+        self.upgrade_buttons = []
+        for i in range(5):
+            btn = Button(self.window, text="", font=("Helvetica", 12),
+                         command=lambda i=i: self.buy_upgrade(i))
+            btn.place(relx=0.5, y=250 + i * 45, anchor="n")
+            self.upgrade_buttons.append(btn)
+
+        self.update_ui()
+
+    def cycle_background(self):
+        img = self.background_images[self.current_bg_index]
+        self.bg_label.config(image=img)
+        self.bg_label.image = img
+        self.current_bg_index = (self.current_bg_index + 1) % len(self.background_images)
+        self.window.after(30000, self.cycle_background)
+
+    def click(self):
+        self.score += self.points_per_click
+        self.click_sound.play()
+        self.update_score()
+
+    def buy_upgrade(self, index):
+        cost = self.upgrade_costs[index]
+        if self.score >= cost:
+            self.score -= cost
+            self.upgrade_levels[index] += 1
+            self.upgrade_costs[index] = int(self.upgrade_costs[index] * 1.5)
+            self.points_per_click += self.upgrade_values[index]
+            self.upgrade_sound.play()
+            self.update_ui()
+
+    def update_score(self):
+        self.score_label.config(text=f"Score: {self.score}")
+        if self.score > self.high_score:
+            self.high_score = self.score
+            with open(self.high_score_file, "w") as f:
+                f.write(str(self.high_score))
+        self.high_score_label.config(text=f"High Score: {self.high_score}")
+
+    def update_ui(self):
+        self.update_score()
+        for i in range(5):
+            self.upgrade_buttons[i].config(
+                text=f"Upgrade {i+1} (+{self.upgrade_values[i]}) - {self.upgrade_costs[i]} pts"
+            )
+
+def flight_sim_downloaded():
+    flight_sim_button = Button(root, text="Flight_sim", activebackground="yellow", activeforeground="white", bg="Lightgray", disabledforeground="gray",command=open_flight_sim_window)
+    flight_sim_button.pack()
+def rock_paper_scissors_downloaded():
+    rock_paper_scissors_button = Button(root, text="Rock, Paper, Scissors", activebackground="yellow", activeforeground="white", bg="Lightgray", disabledforeground="gray",command=open_rpc_window)
+    rock_paper_scissors_button.pack()
+def clicker_downloaded():
+    clicker_button = Button(root, text="Clicker game", activebackground="yellow", activeforeground="white", bg="Lightgray", disabledforeground="gray",command=lambda: ClickerGame(root))
+    clicker_button.pack()
+def open_app_store():
+    app_store = Tk()
+    app_store.title("App store")
+    app_flight_install = Button(app_store, text = "Flight simulator (Install)", activebackground="yellow", activeforeground="white", bg="Lightgray", disabledforeground="gray", command=flight_sim_downloaded)
+    app_flight_install.pack()
+    app_rock_paper_scissors_install = Button(app_store, text = "Rock paper scissors (Install)", activebackground="yellow", activeforeground="white", bg="Lightgray", disabledforeground="gray", command = rock_paper_scissors_downloaded)
+    app_rock_paper_scissors_install.pack()
+    app_clicker_install = Button(app_store, text = "Clicker (Install)", activebackground="yellow", activeforeground="white", bg="Lightgray", disabledforeground="gray", command = clicker_downloaded)
+    app_clicker_install.pack()
 
 
 w = Label(root, text="๓คเภ ฬเภ๔๏ฬ\n", fg="green", bg = "Black")
@@ -1274,6 +1647,9 @@ asteroids_button.pack()
 
 aurora_button = Button(root, text="Aurora predicter", activebackground="purple",activeforeground="white", bg="Lightgray", disabledforeground="gray", command=open_aurora_window)
 aurora_button.pack()
+
+app_store_button = Button(root, text="App store", activebackground="yellow", activeforeground="white", bg="Lightgray", disabledforeground="gray", command=open_app_store) #ADD command
+app_store_button.pack()
 
 
 
