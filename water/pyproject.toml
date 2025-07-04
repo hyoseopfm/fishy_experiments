@@ -1,0 +1,20 @@
+[project]
+name = "water"
+version = "0.1.0"
+description = "First fishy package, and every fishy thing always starts with water."
+readme = "README.md"
+authors = [
+    { name = "Hyoseop Kim", email = "hyoseop.stonier@gmail.com" }
+]
+requires-python = ">=3.10"
+dependencies = [
+    "emoji>=2.14.1",
+]
+
+[project.scripts]
+hello = "water.hello:main"
+starfish = "water.starfish:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
