@@ -5,7 +5,7 @@
         "dockerfile": "./Dockerfile",
         "args": {
             "NAME": "python-zen",
-            "PYTHON_VERSION": "3.10.16",
+            "PYTHON_VERSION": "3.10.18",
             "UBUNTU_VERSION": "jammy"
         }
     },
@@ -20,7 +20,8 @@
                 "lextudio.restructuredtext",
                 "streetsidesoftware.code-spell-checker",
                 "ms-python.python",
-                "ms-python.vscode-pylance"
+                "ms-pyright.pyright",
+                // "ms-python.vscode-pylance"
             ]
         }
     },
