@@ -1,0 +1,21 @@
+[project]
+name = "ooosina"
+version = "0.1.0"
+description = "First fishy package, and every fishy thing always starts with water."
+readme = "README.md"
+authors = [
+    { name = "Hyoseop Kim", email = "hyoseop.stonier@gmail.com" }
+]
+requires-python = ">=3.10"
+dependencies = [
+    "emoji>=2.14.1",
+    "ursina>=7.0.0"
+]
+
+[project.scripts]
+hello = "ooosina.hello:main"
+starfish = "ooosina.starfish:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
